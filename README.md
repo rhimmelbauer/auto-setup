@@ -15,6 +15,7 @@
     - [keymapper](https://github.com/houmain/keymapper)
     - [caffeine](https://code.launchpad.net/caffeine)
     - [flameshot](https://flameshot.org/docs/installation/installation-linux/)
+    - [feh](https://feh.finalrewind.org/)
     - [pavucontrol](https://github.com/pulseaudio/pavucontrol)
     - [SpeedCrunch](https://github.com/ruphy/speedcrunch)
     - xrandr (Optional)

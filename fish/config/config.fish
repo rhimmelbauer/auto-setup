@@ -29,7 +29,6 @@ set -gx PATH \
     /usr/local/games \
     /snap/bin
 
-set SENTRY_ORG willing-n2
 
 fish_django
 fish_docker
