@@ -23,6 +23,7 @@ Packages covered:
 - [keymapper](https://github.com/houmain/keymapper)
 - [caffeine](https://code.launchpad.net/caffeine)
 - [flameshot](https://flameshot.org/)
+- [feh](https://feh.finalrewind.org/) (image viewer / wallpaper setter)
 - [pavucontrol](https://github.com/pulseaudio/pavucontrol)
 - [SpeedCrunch](https://github.com/ruphy/speedcrunch)
 
@@ -45,8 +46,24 @@ lib/common.sh              # shared helpers (sourced by every script)
 
 ## Install order (used by `auto-setup.sh`)
 
-caffeine → flameshot → pavucontrol → speedcrunch → jgmenu → keymapper →
-nerdfonts → nvchad → fish → alacritty → starship → asdf → qtile
+caffeine → flameshot → feh → pavucontrol → speedcrunch → jgmenu →
+keymapper → nerdfonts → nvchad → fish → alacritty → starship → asdf →
+qtile
+
+## Global script flow (`auto-setup.sh`)
+
+The distro is selected once up front, then each package in the install order is
+walked through interactively:
+
+1. Announce the package (`Next package: <pkg>`).
+2. Prompt to continue or skip it. Skipping moves straight to the next package.
+3. Check whether it is already installed (`command -v <pkg>`).
+4. If installed, say so and move on to the next package.
+5. If not installed, prompt to confirm the install. Confirming runs
+   `<pkg>/as-<pkg>.sh`; declining skips it.
+
+Prompts use the `ask_yes_no` helper, which re-asks on invalid input and treats
+a closed stdin (EOF) as "no" so a non-interactive run can't spin forever.
 
 ## Shared library: `lib/common.sh`
 
@@ -71,14 +88,13 @@ Every `as-<pkg>.sh` sources `lib/common.sh` so it works standalone. It provides:
 5. **Idempotency / skip check:** detect if already installed (usually
    `command -v <bin>`, or a path check like `~/.config/nvim`) and skip the
    install, printing a "skipping" message. The global script additionally does
-   its own `command -v` check and, when skipping, waits for the user to press
-   enter.
+   its own `command -v` check (see "Global script flow" above).
 6. Support **both** Arch and Debian/Ubuntu via `as_pkg_install` / `AS_DISTRO`.
 
 ## Installation-method preference
 
 - Prefer official distro repos (via `as_pkg_install`) when the package is
-  available there (flameshot, pavucontrol, speedcrunch, jgmenu, fish,
+  available there (flameshot, feh, pavucontrol, speedcrunch, jgmenu, fish,
   alacritty).
 - For tools **not** in official repos, **build from source** per the upstream
   instructions rather than using a package manager / AUR / prebuilt `.deb`, and
