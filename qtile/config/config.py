@@ -1,4 +1,6 @@
+import glob
 import os
+import random
 import subprocess
 from collections.abc import Callable
 
@@ -15,6 +17,25 @@ mod1 = "alt"
 ctl = "control"
 home = os.path.expanduser("~")
 terminal = guess_terminal()
+
+wallpaper_dir = os.path.join(home, "Pictures", "Wallpaper Digest", "final")
+
+
+@lazy.function
+def randomize_wallpaper(qtile):
+    """Set a random wallpaper on every screen.
+
+    Uses qtile's own wallpaper support rather than `feh --bg-fill`, which only
+    works on X11 (it paints the root window, which a Wayland session has no
+    visible equivalent of).
+    """
+    images = sorted(p for p in glob.glob(os.path.join(wallpaper_dir, "*")) if os.path.isfile(p))
+    if not images:
+        logger.warning("no wallpapers found in %s", wallpaper_dir)
+        return
+
+    for screen in qtile.screens:
+        screen.set_wallpaper(random.choice(images), mode="fill")
 
 
 class VerticalCenter(Max):
@@ -58,7 +79,8 @@ keys = [
     Key([mod], "a", lazy.to_screen(1), desc="Focus on screen 0"),
     Key([mod], "s", lazy.to_screen(0), desc="Focus on screen 1"),
     Key([mod], "d", lazy.to_screen(2), desc="Focus on screen 2"),
-    Key([mod], "y", lazy.spawn("feh --randomize --bg-fill /home/rhimmelbauer/Pictures/final/"), desc="Randomize Wallpapers"),
+    Key([mod], "y", lazy.spawn("feh --randomize --bg-fill /home/rob/Pictures/Wallpaper\ Digest/"), desc="Randomize Wallpapers"),
+    # Key([mod], "y", randomize_wallpaper, desc="Randomize Wallpapers"),
 
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
